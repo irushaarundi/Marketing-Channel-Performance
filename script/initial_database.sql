@@ -1,11 +1,13 @@
-*/
-=====================================================================================
+/*
+===============================================================
+
 Create Database and Schemas
-=====================================================================================
+
+===============================================================
 Script Purpose:
-      This scrpt creates a new database named 'MChannel_Performance' after checking if it already exists.
-    	If the database exists, it is droped and recreated. Additionaly, the script set up three schemas
-    	within the database: 'broze', 'silver', 'gold'.
+	This scrpt creates a new database named 'MChannel_Performance' after checking if it already exists.
+	If the database exists, it is droped and recreated. Additionaly, the script set up three schemas
+	within the database: 'broze', 'silver', 'gold'.
 
 WARNING:
 	Running this script will drop the entire 'MChannel_Performance if it exist.
@@ -13,6 +15,7 @@ WARNING:
 	and ensure you have backup befor running this script.
 
 */
+
 --CREATE DDatabase 'MChannel_Performance'
 USE master;
 
