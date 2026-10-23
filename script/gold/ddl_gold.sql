@@ -1,3 +1,14 @@
+/*
+=========================================================================================
+DDL Script: Create Gold Views
+=========================================================================================
+Script Purpose:
+    This script creates view for the Gold layer in the data warehouse.
+    to produce a clean, enriched, and business-ready dataset.
+Usage:
+    - These views can be queried directly for analytics and reporting.
+=========================================================================================
+*/
 --====================================================================
 
 -- Revenue details of the customers who came because of the campaings
