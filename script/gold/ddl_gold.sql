@@ -24,7 +24,8 @@ WITH s AS (
         channel,
         campaign,
         SUM(revenue_first_90_days) AS revenue,
-        COUNT(*) AS user_count
+        COUNT(*) AS user_count,
+        COUNT([plan]) AS subscribe_users
     FROM silver.signups
     WHERE campaign IS NOT NULL
     GROUP BY signup_date, channel, campaign
@@ -33,9 +34,12 @@ SELECT
     sp.date,
     sp.channel,
     sp.campaign,
-    SUM(sp.spend)                  AS spend,
+    SUM(sp.impressions) AS impressions,
+    SUM(sp.clicks) AS clicks,
+    SUM(sp.spend) AS spend,
     COALESCE(MAX(s.user_count), 0) AS user_count,
-    COALESCE(MAX(s.revenue), 0)    AS revenue
+    COALESCE(MAX(s.subscribe_users),0) AS subscribe_users,
+    COALESCE(MAX(s.revenue), 0) AS revenue
 FROM silver.ad_spend sp
 LEFT JOIN s
     ON  sp.date     = s.signup_date
@@ -45,7 +49,7 @@ GROUP BY sp.date, sp.channel, sp.campaign
 GO
 --====================================================================
 
--- Create Revenue & User countof all channel
+-- Create Revenue & User count of all channel
 
 --====================================================================
 IF OBJECT_ID ('gold.revenue_of_channel','V') IS NOT NULL
@@ -59,4 +63,45 @@ SELECT
         COUNT(*) AS user_count
     FROM silver.signups
     GROUP BY signup_date, channel;
+GO
+--====================================================================
 
+-- Create campaign_full_view
+
+--====================================================================
+-- Each Campaign total spend
+IF OBJECT_ID ('gold.campaign_full_view', 'V') IS NOT NULL
+	DROP VIEW gold.campaign_full_view
+GO
+CREATE VIEW gold.campaign_full_view AS 
+WITH campaign_total AS ( 
+    SELECT
+        --date,
+        campaign,
+        SUM(spend) AS total_spend_campaign,
+        SUM(impressions) AS total_impressions_campaign,
+        SUM(clicks) AS total_clicks_campaing,
+        SUM(subscribe_users) AS total_subscribe_users,
+        SUM(user_count) AS total_signup_customer_count,
+        SUM(revenue) AS total_revenue
+    FROM gold.campaign
+    GROUP BY campaign --,date
+)
+SELECT 
+    --date,
+    campaign,
+    total_spend_campaign,
+    total_revenue,
+    total_impressions_campaign,
+    total_subscribe_users,
+    total_signup_customer_count,
+    CAST(total_spend_campaign * 1.0
+    / NULLIF(total_clicks_campaing,0) AS DECIMAL(18,2)) AS cost_per_click,
+    CAST(total_clicks_campaing * 1.0
+    / NULLIF(total_impressions_campaign,0) AS DECIMAL(18,4)) AS click_rate,
+    CAST(ISNULL((total_spend_campaign *1.0
+    /NULLIF(total_signup_customer_count,0)),0) AS DECIMAL(18,2)) AS cost_per_signup,
+    CAST(ISNULL((total_spend_campaign *1.0
+    /NULLIF(total_subscribe_users,0)),0) AS DECIMAL(18,2)) AS cost_per_paying_subscriber,
+    (total_revenue - total_spend_campaign) AS profit
+FROM campaign_total;
