@@ -16,16 +16,16 @@ CREATE TABLE silver.ad_spend(
 	ad_spend_key NVARCHAR(50),
 	[date] date,
 	channel NVARCHAR(50),
+	campaign NVARCHAR(50),
 	impressions INT,
 	clicks INT,
 	spend DECIMAL(10,2),
 	dwh_create_date DATETIME2 DEFAULT GETDATE()
 );
 
-IF OBJECT_ID('silver.sigups', 'U') IS NOT NULL
-	DROP TABLE silver.sigups
-CREATE TABLE silver.sigups(
-	ad_spend_key NVARCHAR(50),
+IF OBJECT_ID('silver.signups', 'U') IS NOT NULL
+	DROP TABLE silver.signups
+CREATE TABLE silver.signups(
 	user_id INT,
 	channel NVARCHAR(50),
 	campaign NVARCHAR(50),
