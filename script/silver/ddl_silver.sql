@@ -27,6 +27,7 @@ IF OBJECT_ID('silver.signups', 'U') IS NOT NULL
 	DROP TABLE silver.signups
 CREATE TABLE silver.signups(
 	user_id INT,
+	signup_date DATE,
 	channel NVARCHAR(50),
 	campaign NVARCHAR(50),
 	subscription_start_date date,
